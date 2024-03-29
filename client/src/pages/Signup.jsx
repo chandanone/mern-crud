@@ -1,65 +1,79 @@
-import { useState } from "react"
+import React, { useState } from "react";
+import axios from "axios";
+import { handleError } from "../utils/handleError";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+axios.defaults.withCredentials = true;
 
-const defaultvalues = {
-    email: "",
-    username: "",
-    password: ""
-}
+const defaultValues = {
+  email: "",
+  username: "",
+  password: "",
+};
 
-export const Signup = () =>{
-    
-    const [signupData, setSignupData ] = useState(defaultvalues)
+export default function Signup() {
+  const [signupInput, setSignupInput] = useState(defaultValues);
+  const navigate = useNavigate();
 
-    const handleSubmit = async (e) =>{
-        e.preventDefault()
-        try {
-            
-        } catch (error) {
-            
-        }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("http://localhost:4000/user/signup", {
+        email: signupInput.email,
+        password: signupInput.password,
+        username: signupInput.username,
+      });
+      navigate("/login");
+      toast.success("User Created Successfully!");
+    } catch (error) {
+      handleError(error);
     }
+  };
 
-    // handleChange
-    const handleChange = (e) =>{
-        setSignupData((prevVal) => ({
-            ...prevVal,
-            [e.target.name]: e.target.value,
-        }))
-        console.log(signupData)
-    }
+  //handle on change event function
+  const handleOnChange = (e) => {
+    setSignupInput((prevVal) => ({
+      ...prevVal,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-    return (
-        <div className="__signup w-full h-[calc(100vh-60px)] bg-slate-800 text-white flex justify-center items-center">
-            <form onSubmit={handleSubmit} className=" p-5 flex flex-col gap-2">
-                <input 
-                    className="text-black" 
-                    type="email"
-                    name="email" 
-                    placeholder="Email" 
-                    required
-                    value={signupData.email}
-                    onChange={handleChange}
-                />
-                <input 
-                    className="text-black" 
-                    type="text"
-                    name="username" 
-                    placeholder="Username" 
-                    required
-                    value={signupData.username}
-                    onChange={handleChange}
-                />
-                <input 
-                    className="text-black" 
-                    type="password"
-                    name="password" 
-                    placeholder="Password" 
-                    required
-                    value={signupData.password}
-                    onChange={handleChange}
-                />
-                <button className="primary-btn" type="submit">Signup</button>
-            </form>
-        </div>
-    )
+  return (
+    <div className="__signup w-full h-[calc(100dvh-60px)] bg-slate-800 text-white flex justify-center items-center flex-col gap-3">
+      <h1 className="text-3xl">Signup Page</h1>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+        <input
+          className="text-black outline-none p-2 rounded"
+          type="text"
+          placeholder="Username"
+          required
+          name="username"
+          value={signupInput.username}
+          onChange={handleOnChange}
+        />
+        <input
+          className="text-black outline-none p-2 rounded"
+          type="email"
+          placeholder="Email"
+          required
+          name="email"
+          value={signupInput.email}
+          onChange={handleOnChange}
+        />
+        <input
+          className="text-black outline-none p-2 rounded"
+          type="password"
+          placeholder="Password"
+          required
+          name="password"
+          value={signupInput.password}
+          onChange={handleOnChange}
+        />
+        <button className="primary-btn" type="submit">
+          Sign up
+        </button>
+      </form>
+    </div>
+  );
 }
